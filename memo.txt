@@ -1,0 +1,1 @@
+g++ -o test test.cpp LidarMap.cpp -std=c++17
