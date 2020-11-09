@@ -61,15 +61,15 @@ std::vector<LineSegment> LidarMap::getLineSegments(){
     return mLineSegments;
 }
 
-std::vector<LineSegment> LidarMap::getLineSegments(Eigen::Matrix2d& R, Eigen::Vector2d& T){
+std::vector<LineSegment> LidarMap::getLineSegments(const Eigen::Matrix2d& R, const Eigen::Vector2d& T){
     return calcLineSegments(mLineSegments, R, T);
 }
 
-std::vector<LineSegment> LidarMap::calcLineSegments(std::vector<LineSegment>& lineSegments, Eigen::Matrix2d& R, Eigen::Vector2d& T){
+std::vector<LineSegment> LidarMap::calcLineSegments(const std::vector<LineSegment>& lineSegments, const Eigen::Matrix2d& R, const Eigen::Vector2d& T){
     std::vector<LineSegment> movedLineSegments;
     movedLineSegments.reserve(lineSegments.size());
 
-    for (LineSegment &l : lineSegments){
+    for (const LineSegment &l : lineSegments){
         Eigen::Vector2d movedStart = R * l.start + T;
         Eigen::Vector2d movedEnd   = R * l.end   + T;
         movedLineSegments.push_back(LineSegment(movedStart, movedEnd));
@@ -78,7 +78,7 @@ std::vector<LineSegment> LidarMap::calcLineSegments(std::vector<LineSegment>& li
     return movedLineSegments;
 }
 
-std::pair<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> LidarMap::calcNearestPointsInMap2(std::vector<Eigen::Vector2d>& points, std::vector<LineSegment>& lineSegments){
+std::pair<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> LidarMap::calcNearestPointsInMap2(const std::vector<Eigen::Vector2d>& points, const std::vector<LineSegment>& lineSegments){
     
     size_t point_num = points.size();
     
@@ -88,7 +88,7 @@ std::pair<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> LidarMap::
     std::vector<double> errors;
     errors.reserve(point_num);
 
-    for (Eigen::Vector2d &p : points){
+    for (const Eigen::Vector2d &p : points){
         std::pair<Eigen::Vector2d, double> pair = calcNearestPointInMap2(p, lineSegments);
         nearest_points.push_back(pair.first);
         errors.push_back(pair.second);
@@ -117,14 +117,14 @@ std::pair<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> LidarMap::
     return std::make_pair(nearest_points_filtered, points_filtered);
 }
 
-std::pair<Eigen::Vector2d, double> LidarMap::calcNearestPointInMap2(Eigen::Vector2d& point, std::vector<LineSegment>& lineSegments){
+std::pair<Eigen::Vector2d, double> LidarMap::calcNearestPointInMap2(const Eigen::Vector2d& point, const std::vector<LineSegment>& lineSegments){
     std::vector<Eigen::Vector2d> near_points;
     near_points.reserve(lineSegments.size());
 
     std::vector<double> errors;
     errors.reserve(lineSegments.size());
 
-    for (LineSegment &l: lineSegments){
+    for (const LineSegment &l: lineSegments){
         Eigen::Vector2d near_point = calcNearestPoint(point, l);
         near_points.push_back(near_point);
         errors.push_back((point-near_point).norm());
@@ -134,25 +134,25 @@ std::pair<Eigen::Vector2d, double> LidarMap::calcNearestPointInMap2(Eigen::Vecto
     return std::make_pair(near_points[index], errors[index]);
 }
 
-std::vector<Eigen::Vector2d> LidarMap::calcNearestPointsInMap(std::vector<Eigen::Vector2d>& points, std::vector<LineSegment>& lineSegments){
+std::vector<Eigen::Vector2d> LidarMap::calcNearestPointsInMap(const std::vector<Eigen::Vector2d>& points, const std::vector<LineSegment>& lineSegments){
     std::vector<Eigen::Vector2d> nearest_points;
     nearest_points.reserve(points.size());
 
-    for (Eigen::Vector2d &p : points){
+    for (const Eigen::Vector2d &p : points){
         nearest_points.push_back(calcNearestPointInMap(p, lineSegments));
     }
     
     return nearest_points;
 }
 
-Eigen::Vector2d LidarMap::calcNearestPointInMap(Eigen::Vector2d& point, std::vector<LineSegment>& lineSegments){
+Eigen::Vector2d LidarMap::calcNearestPointInMap(const Eigen::Vector2d& point, const std::vector<LineSegment>& lineSegments){
     std::vector<Eigen::Vector2d> near_points;
     near_points.reserve(lineSegments.size());
 
     std::vector<double> errors;
     errors.reserve(lineSegments.size());
 
-    for (LineSegment &l: lineSegments){
+    for (const LineSegment &l: lineSegments){
         Eigen::Vector2d near_point = calcNearestPoint(point, l);
         near_points.push_back(near_point);
         errors.push_back((point-near_point).norm());
@@ -161,7 +161,7 @@ Eigen::Vector2d LidarMap::calcNearestPointInMap(Eigen::Vector2d& point, std::vec
     return near_points[std::distance(errors.begin(), std::min_element(errors.begin(), errors.end()))];
 }
 
-Eigen::Vector2d LidarMap::calcNearestPoint(Eigen::Vector2d& point, LineSegment& lineSegment){
+Eigen::Vector2d LidarMap::calcNearestPoint(const Eigen::Vector2d& point, const LineSegment& lineSegment){
     Eigen::Vector2d vecA = ls2Vec(lineSegment);
     Eigen::Vector2d vecB = pts2Vec(lineSegment.start, point);
     
@@ -182,11 +182,11 @@ Eigen::Vector2d LidarMap::calcNearestPoint(Eigen::Vector2d& point, LineSegment& 
     }
 }
 
-Eigen::Vector2d LidarMap::ls2Vec(LineSegment& lineSegment){
+Eigen::Vector2d LidarMap::ls2Vec(const LineSegment& lineSegment){
     return lineSegment.end - lineSegment.start; 
 }
 
-Eigen::Vector2d LidarMap::pts2Vec(Eigen::Vector2d& start, Eigen::Vector2d& end){
+Eigen::Vector2d LidarMap::pts2Vec(const Eigen::Vector2d& start, const Eigen::Vector2d& end){
     return end - start;
 }
 
