@@ -4,11 +4,11 @@
 #include <numeric>
 
 const double LidarMap::MAP0[][2][2] = {
-    {{0.0 ,0.0},{3.0, 0.0}},
-    {{0.0, 0.0},{0.0, 3.0}},
-    {{3.0, 0.0},{3.0, 3.0}},
-    {{0.0, 3.0},{3.0, 3.0}},
-    {{1.5, 1.5},{3.0, 1.5}}
+    {{   0.0 ,   0.0},{3000.0,    0.0}},
+    {{   0.0,    0.0},{   0.0, 3000.0}},
+    {{3000.0,    0.0},{3000.0, 3000.0}},
+    {{   0.0, 3000.0},{3000.0, 3000.0}},
+    {{1500.0, 1500.0},{3000.0, 1500.0}}
 };
 
 const double LidarMap::MAP2[][2][2] = {
@@ -37,7 +37,8 @@ LidarMap::LidarMap(unsigned int map_num){
 void LidarMap::setSegments(unsigned int segment_num, const double MAP[][2][2]){
 
     for (size_t i = 0; i < segment_num; i++){
-        mLineSegments.push_back(LineSegment(MAP[i][0][0], MAP[i][0][1], MAP[i][1][0], MAP[i][1][1]));
+        // mLineSegments.push_back(LineSegment(MAP[i][0][0], MAP[i][0][1], MAP[i][1][0], MAP[i][1][1]));
+        mLineSegments.emplace_back(MAP[i][0][0], MAP[i][0][1], MAP[i][1][0], MAP[i][1][1]);
     }
 
     Eigen::Vector2d testVec = Eigen::Vector2d(1,0.5);
@@ -70,9 +71,10 @@ std::vector<LineSegment> LidarMap::calcLineSegments(const std::vector<LineSegmen
     movedLineSegments.reserve(lineSegments.size());
 
     for (const LineSegment &l : lineSegments){
-        Eigen::Vector2d movedStart = R * l.start + T;
-        Eigen::Vector2d movedEnd   = R * l.end   + T;
-        movedLineSegments.push_back(LineSegment(movedStart, movedEnd));
+        // Eigen::Vector2d movedStart = R * l.start + T;
+        // Eigen::Vector2d movedEnd   = R * l.end   + T;
+        // movedLineSegments.push_back(LineSegment(movedStart, movedEnd));
+        // movedLineSegments.emplace_back(movedStart, movedEnd);
     }
     
     return movedLineSegments;

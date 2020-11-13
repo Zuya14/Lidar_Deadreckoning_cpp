@@ -4,6 +4,7 @@
 #include <iostream>
 #include <eigen3/Eigen/Eigen>
 
+#include "ICP.hpp"
 
 int main(){
     LidarMap map0 = LidarMap(0);
