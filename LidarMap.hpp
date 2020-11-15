@@ -13,8 +13,8 @@ public:
 
     std::vector<LineSegment> calcLineSegments(const std::vector<LineSegment>& lineSegments, const Eigen::Matrix2d& R, const Eigen::Vector2d& T);
 
-    std::pair<std::vector<Eigen::Vector2d>, std::vector<Eigen::Vector2d>> calcNearestPointsInMap2(const std::vector<Eigen::Vector2d>& points, const std::vector<LineSegment>& lineSegments);
-    std::vector<Eigen::Vector2d> calcNearestPointsInMap(const std::vector<Eigen::Vector2d>& points, const std::vector<LineSegment>& lineSegments);
+    std::pair<std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>, std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>> calcNearestPointsInMap2(const std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>& points, const std::vector<LineSegment>& lineSegments);
+    std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> calcNearestPointsInMap(const std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>& points, const std::vector<LineSegment>& lineSegments);
 
 private:
     static const double MAP0[][2][2];
@@ -28,7 +28,7 @@ private:
 
     Eigen::Vector2d ls2Vec(const LineSegment& lineSegment);
     Eigen::Vector2d pts2Vec(const Eigen::Vector2d& start, const Eigen::Vector2d& end);
-
+    
     std::vector<LineSegment> mLineSegments;
 };
 

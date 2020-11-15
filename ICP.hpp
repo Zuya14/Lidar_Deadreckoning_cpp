@@ -8,13 +8,20 @@ class ICP{
 public:
     ICP(double angle_range=270.0, double angle_offset=-45.0);
 
-    void estimate(const std::vector<double>& pts, LidarMap& lidarMap, const Eigen::Vector2d& initR, const Eigen::Vector2d& initT);
+    std::pair<Eigen::Matrix2d, Eigen::Vector2d> estimate(const std::vector<double>& pts, LidarMap& lidarMap, const Eigen::Matrix2d& initR, const Eigen::Vector2d& initT, size_t max_itr=10, double eps=1e-6);
+
+    std::tuple<double, double, double> calc_XY_Theta(const Eigen::Matrix2d& R, const Eigen::Vector2d& T);
 
 private:
 
-    Eigen::Matrix2d fitTransform(const Eigen::MatrixXd& A, const Eigen::MatrixXd& B);
+    std::pair<double, double> calcError(Eigen::MatrixXd A, Eigen::MatrixXd B);
 
-    std::vector<Eigen::Vector2d> dist_to_xy(const std::vector<double>& pts);
+    std::pair<Eigen::Matrix2d, Eigen::Vector2d> fitTransform(const Eigen::MatrixXd& A, const Eigen::MatrixXd& B);
+
+    Eigen::MatrixXd convert_to_MatrixXd(std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> pts);
+    Eigen::MatrixXd convert_to_MatrixXd(std::vector<LineSegment> lineSegments);
+
+    std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> dist_to_xy(const std::vector<double>& pts);
     std::vector<double> meter_to_mm(const std::vector<double>& pts);
     double degToRad(double x);
 
