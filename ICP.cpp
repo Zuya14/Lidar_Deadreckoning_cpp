@@ -24,7 +24,11 @@ std::pair<Eigen::Matrix2d, Eigen::Vector2d> ICP::estimate(const std::vector<doub
 
         std::pair<Eigen::Matrix2d, Eigen::Vector2d> RT = fitTransform(mtx_nearest, mtx_pts_xy);
         Eigen::Matrix2d R = RT.first;
-        Eigen::Vector2d T = RT.second;   
+        Eigen::Vector2d T = RT.second;
+
+        // if(iter==0){
+        //     printf("T: %.1f, %.1f", T[0], T[1]);
+        // }
 
         movedLS = lidarMap.calcLineSegments(movedLS, R, T);
 
@@ -35,7 +39,7 @@ std::pair<Eigen::Matrix2d, Eigen::Vector2d> ICP::estimate(const std::vector<doub
         // printf("%f ", std::abs(prev_mse - mse));
 
         if (std::abs(prev_mse - mse) < eps) {
-            printf("clear: %lu\n", iter);
+            // printf("clear: %lu\n", iter);
             break;
         }
 

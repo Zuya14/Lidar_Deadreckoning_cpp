@@ -59,8 +59,8 @@ void test() {
 			std::chrono::system_clock::time_point start, end;
 			start = std::chrono::system_clock::now();
 
-			// bool success = lrfDR.update(points);
-			std::pair<Eigen::Matrix2d, Eigen::Vector2d> RT = icp.estimate(points, lidarMap0, R, T, 50, 1e-2);
+			// bool success = lrfDR.update(points); 
+			std::pair<Eigen::Matrix2d, Eigen::Vector2d> RT = icp.estimate(points, lidarMap0, R.transpose(), -T, 50, 1e-2);
             R = RT.first;
             T = RT.second;
 
