@@ -83,8 +83,8 @@ void test() {
 }
 
 void test2() {
-	// std::string filename = "lidar_10_long_fixed.txt";
-	std::string filename = "lidar_25_long_fixed.txt";
+	std::string filename = "lidar_10_long_fixed.txt";
+	// std::string filename = "lidar_25_long_fixed.txt";
 
 	std::ifstream read_file(filename, std::ios::in);
 	std::string read_line;
