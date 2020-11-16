@@ -8,7 +8,8 @@ class ICP{
 public:
     ICP(double angle_range=270.0, double angle_offset=-45.0);
 
-    std::pair<Eigen::Matrix2d, Eigen::Vector2d> estimate(const std::vector<double>& pts, LidarMap& lidarMap, const Eigen::Matrix2d& initR, const Eigen::Vector2d& initT, size_t max_itr=10, double eps=1e-6);
+    std::pair<Eigen::Matrix2d, Eigen::Vector2d> estimate2(const std::vector<double>& pts, LidarMap& lidarMap, const Eigen::Matrix2d& initR, const Eigen::Vector2d& initT, size_t max_itr=50, double eps=1e-3, double outlier_rate=2.0);
+    std::pair<Eigen::Matrix2d, Eigen::Vector2d> estimate(const std::vector<double>& pts, LidarMap& lidarMap, const Eigen::Matrix2d& initR, const Eigen::Vector2d& initT, size_t max_itr=50, double eps=1e-3);
 
     std::tuple<double, double, double> calc_XY_Theta(const Eigen::Matrix2d& R, const Eigen::Vector2d& T);
 

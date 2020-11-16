@@ -7,6 +7,63 @@ ICP::ICP(double angle_range, double angle_offset):
     ANGLE_OFFSET(angle_offset)
 {}
 
+std::pair<Eigen::Matrix2d, Eigen::Vector2d> ICP::estimate2(const std::vector<double>& pts, LidarMap& lidarMap, const Eigen::Matrix2d& initR, const Eigen::Vector2d& initT, size_t max_itr, double eps, double outlier_rate){
+    std::vector<LineSegment> movedLS = lidarMap.getLineSegments(initR, initT);
+    
+    std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> pts_xy = dist_to_xy(meter_to_mm(pts));
+
+    double prev_mse = std::numeric_limits<double>::max();
+
+    double max_outlier_rate = 3.5;
+    if(outlier_rate > max_outlier_rate){
+        outlier_rate = max_outlier_rate;
+    }
+	
+    for (size_t iter = 0; iter < max_itr; iter++) {
+        double rate = (outlier_rate - max_outlier_rate) * (iter/(double)max_itr) + max_outlier_rate;
+        std::pair<std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>, std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>> pts_pair = lidarMap.calcNearestPointsInMap2(pts_xy, movedLS, rate);
+        
+        std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> nearest_filtered = pts_pair.first;
+        std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> pts_xy_filtered = pts_pair.second;
+
+        Eigen::MatrixXd mtx_pts_xy_filtered = convert_to_MatrixXd(pts_xy_filtered);
+        Eigen::MatrixXd mtx_nearest_filtered = convert_to_MatrixXd(nearest_filtered);
+
+        std::pair<Eigen::Matrix2d, Eigen::Vector2d> RT = fitTransform(mtx_nearest_filtered, mtx_pts_xy_filtered);
+        Eigen::Matrix2d R = RT.first;
+        Eigen::Vector2d T = RT.second;
+
+        movedLS = lidarMap.calcLineSegments(movedLS, R, T);
+
+        std::pair<double, double> error = calcError(mtx_nearest_filtered, mtx_pts_xy_filtered);
+        double mse = error.first; 
+        double std_dev = error.second;
+
+        if(iter==0){
+            // printf("T: %.1f, %.1f ", T[0], T[1]);
+            // printf("%.1f, %.1f\n", mse, std_dev);
+        }
+
+        // printf("%lu\n", mtx_nearest_filtered.rows());
+
+        if (std::abs(prev_mse - mse) < eps) {
+            // printf("clear: %lu\n", iter);
+            break;
+        }
+
+		prev_mse = mse;
+    }
+
+    std::vector<LineSegment> LS = lidarMap.getLineSegments();
+
+    Eigen::MatrixXd mtx_LS = convert_to_MatrixXd(LS);
+    Eigen::MatrixXd mtx_movedLS = convert_to_MatrixXd(movedLS);
+
+    std::pair<Eigen::Matrix2d, Eigen::Vector2d> RT_final = fitTransform(mtx_movedLS, mtx_LS);
+
+    return RT_final;
+}
+
 std::pair<Eigen::Matrix2d, Eigen::Vector2d> ICP::estimate(const std::vector<double>& pts, LidarMap& lidarMap, const Eigen::Matrix2d& initR, const Eigen::Vector2d& initT, size_t max_itr, double eps){
     std::vector<LineSegment> movedLS = lidarMap.getLineSegments(initR, initT);
 

@@ -64,11 +64,11 @@ std::vector<LineSegment> LidarMap::calcLineSegments(const std::vector<LineSegmen
     return movedLineSegments;
 }
 
-std::pair<std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>, std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>> LidarMap::calcNearestPointsInMap2(const std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>& points, const std::vector<LineSegment>& lineSegments){
+std::pair<std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>, std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>> LidarMap::calcNearestPointsInMap2(const std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>& points, const std::vector<LineSegment>& lineSegments, double outlier_rate){
     
     size_t point_num = points.size();
     
-    std::vector<Eigen::Vector2d> nearest_points;
+    std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> nearest_points;
     nearest_points.reserve(point_num);
 
     std::vector<double> errors;
@@ -86,7 +86,6 @@ std::pair<std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>
     double sq_sum = std::inner_product(errors.begin(), errors.end(), errors.begin(), 0.0);
     double stdev = std::sqrt(sq_sum / errors.size() - mean * mean);
 
-
     std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> nearest_points_filtered;
     nearest_points_filtered.reserve(point_num);
 
@@ -94,7 +93,7 @@ std::pair<std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>
     points_filtered.reserve(point_num);
 
     for (size_t i = 0; i < point_num; i++){
-        if(errors[i] , 2.0*stdev){
+        if(errors[i] < outlier_rate*stdev){
             nearest_points_filtered.push_back(nearest_points[i]);
             points_filtered.push_back(points[i]);
         }
