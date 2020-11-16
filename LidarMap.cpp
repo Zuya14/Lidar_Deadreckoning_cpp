@@ -93,7 +93,7 @@ std::pair<std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>
     points_filtered.reserve(point_num);
 
     for (size_t i = 0; i < point_num; i++){
-        if(errors[i] < outlier_rate*stdev){
+        if(errors[i] - mean < outlier_rate*stdev){
             nearest_points_filtered.push_back(nearest_points[i]);
             points_filtered.push_back(points[i]);
         }

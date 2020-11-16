@@ -20,7 +20,8 @@ std::pair<Eigen::Matrix2d, Eigen::Vector2d> ICP::estimate2(const std::vector<dou
     }
 	
     for (size_t iter = 0; iter < max_itr; iter++) {
-        double rate = (outlier_rate - max_outlier_rate) * (iter/(double)max_itr) + max_outlier_rate;
+        // double rate = (outlier_rate - max_outlier_rate) * (iter/(double)max_itr) + max_outlier_rate;
+        double rate = outlier_rate;
         std::pair<std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>, std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>>> pts_pair = lidarMap.calcNearestPointsInMap2(pts_xy, movedLS, rate);
         
         std::vector<Eigen::Vector2d, Eigen::aligned_allocator<Eigen::Vector2d>> nearest_filtered = pts_pair.first;
